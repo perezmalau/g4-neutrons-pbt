@@ -1,0 +1,30 @@
+
+/phantom/select water
+/run/initialize
+
+# Source geometry:
+/gps/particle proton
+/gps/position -50 0 0 cm
+
+/gps/pos/type Beam
+# Incident surface is yz plane:
+/gps/pos/rot1 0 1 0
+/gps/pos/rot2 0 0 1
+
+/gps/pos/shape Circle
+/gps/pos/radius 0.5 mm
+/gps/pos/sigma_r 0
+
+/gps/ang/rot1 0 0 1
+/gps/ang/rot2 0 1 0
+/gps/ang/type beam1d
+/gps/ang/sigma_r 0 deg
+
+# Energy is gaussian profile
+/gps/ene/type Gauss
+/gps/ene/mono 180.0 MeV
+/gps/ene/sigma 0.0001 MeV
+
+/output/rootFileName /Users/u4144546/Library/CloudStorage/OneDrive-UniversityofWarwick/Desktop/MaThRad/NeutronSDE/Geant4-neutrons/Output/G4_1E6_180.0MeV_QGSP_INCLXX.root
+
+/run/beamOn 1000000
