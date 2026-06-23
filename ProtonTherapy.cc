@@ -36,6 +36,15 @@
 #include "G4UIExecutive.hh"
 #include "G4StepLimiterPhysics.hh"
 
+// Custom physics list components
+#include "G4EmStandardPhysics_option4.hh"
+#include "G4HadronPhysicsQGSP_BIC_HP.hh"
+#include "G4DecayPhysics.hh"
+#include "G4IonBinaryCascadePhysics.hh"
+#include "G4HadronElasticPhysicsHP.hh"
+#include "G4StoppingPhysics.hh"
+#include "G4RadioactiveDecayPhysics.hh"
+
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
@@ -116,13 +125,25 @@ int main(int argc, char **argv) {
     auto *detConstruction = new DetectorConstruction();
     runManager->SetUserInitialization(detConstruction);
 
-  	// Physics lists, uncomment the one you need
-  	auto* physicsFactory = new G4PhysListFactory();
-    // Reference
-	auto physicsList = physicsFactory->GetReferencePhysList(physListName);
-  	physicsList->SetVerboseLevel(0);
+    // Physics list: use "-p custom" for the hand-built list, or any
+    // reference name (e.g. QGSP_BIC_HP) for the factory.
+    G4VModularPhysicsList* physicsList = nullptr;
+    if (physListName == "custom") {
+        physicsList = new G4VModularPhysicsList();
+        physicsList->RegisterPhysics(new G4EmStandardPhysics_option4());
+        physicsList->RegisterPhysics(new G4HadronPhysicsQGSP_BIC_HP());
+        physicsList->RegisterPhysics(new G4DecayPhysics());
+        physicsList->RegisterPhysics(new G4IonBinaryCascadePhysics());
+        physicsList->RegisterPhysics(new G4HadronElasticPhysicsHP());
+        physicsList->RegisterPhysics(new G4StoppingPhysics());
+        physicsList->RegisterPhysics(new G4RadioactiveDecayPhysics());
+    } else {
+        auto* physicsFactory = new G4PhysListFactory();
+        physicsList = physicsFactory->GetReferencePhysList(physListName);
+    }
+    physicsList->SetVerboseLevel(0);
     physicsList->RegisterPhysics(new G4StepLimiterPhysics());
-  	runManager->SetUserInitialization(physicsList);
+    runManager->SetUserInitialization(physicsList);
 
     auto *actionInitialization = new ActionInitialization();
     runManager->SetUserInitialization(actionInitialization);
